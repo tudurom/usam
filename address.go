@@ -6,6 +6,7 @@ import (
 	"github.com/tudurom/usam/parser"
 )
 
+// Address is a chunk of consecutive text (a range) in a buffer
 type Address struct {
 	R      Range
 	Buffer *Buffer
@@ -126,6 +127,9 @@ func lineAddress(la *parser.LineAddress, addr Address, sign int) (Address, error
 		}
 		// end of the line
 		a.R.P2 = p
+		if p < len(addr.Buffer.Data) {
+			a.R.P2++
+		}
 	} else {
 		p = addr.R.P1
 		if l == 0 {
@@ -185,6 +189,7 @@ func charAddress(ca *parser.CharAddress, addr Address, sign int) (Address, error
 	return addr, nil
 }
 
+// ResolveAddress computes the address from its sam form
 func ResolveAddress(ap *parser.Address, a Address, sign int) (Address, error) {
 	for ap != nil {
 		var err error

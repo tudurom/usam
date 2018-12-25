@@ -6,11 +6,13 @@ import (
 	"os"
 )
 
+// Buffer is a temporary representation of the file we are manipulating
 type Buffer struct {
 	Data []byte
 	Dot  Range
 }
 
+// NewBuffer creates a buffer from a reader
 func NewBuffer(r io.Reader) (*Buffer, error) {
 	data, err := ioutil.ReadAll(r)
 	if err != nil {
@@ -22,6 +24,7 @@ func NewBuffer(r io.Reader) (*Buffer, error) {
 	}, nil
 }
 
+// NewBufferFromFile creates a buffer from a file
 func NewBufferFromFile(fn string) (*Buffer, error) {
 	f, err := os.Open(fn)
 	if err != nil {
@@ -34,4 +37,16 @@ func NewBufferFromFile(fn string) (*Buffer, error) {
 	}
 
 	return b, nil
+}
+
+// Save saves the buffer's contents to a file
+func (b *Buffer) Save(fn string) error {
+	f, err := os.Create(fn)
+	if err != nil {
+		return err
+	}
+	defer f.Close()
+
+	_, err = f.Write(b.Data)
+	return err
 }

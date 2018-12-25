@@ -4,11 +4,13 @@ package lex
 import (
 	"bufio"
 	"bytes"
+	"fmt"
 	"io"
 	"strings"
 	"unicode"
 )
 
+// Token represents a symbolic token in the address to be parsed
 type Token int
 
 var eof = rune(0)
@@ -112,7 +114,9 @@ func (s *Scanner) scanRegexp(reverse bool) (tok Token, value string) {
 	}
 	buf.WriteRune(s.read())
 	for {
-		if ch := s.read(); ch == eof {
+		ch := s.read()
+		fmt.Println("Scanning", ch)
+		if ch == eof {
 			break
 		} else if ch == char {
 			if escaping {
@@ -137,9 +141,8 @@ func (s *Scanner) scanRegexp(reverse bool) (tok Token, value string) {
 	if closed {
 		if reverse {
 			return BackwardsRegexp, buf.String()
-		} else {
-			return Regexp, buf.String()
 		}
+		return Regexp, buf.String()
 	}
 
 	return Illegal, strings.TrimSpace(buf.String())
