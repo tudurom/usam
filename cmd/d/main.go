@@ -4,8 +4,10 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/tudurom/usam/cliutil"
+
 	"github.com/tudurom/usam"
-	"github.com/tudurom/usam/pipeformat"
+	"github.com/tudurom/usam/cliutil/pipeformat"
 )
 
 func usage() {
@@ -20,8 +22,7 @@ func main() {
 
 	pf, err := pipeformat.Process()
 	if err != nil {
-		fmt.Println(err)
-		os.Exit(1)
+		cliutil.Err(err)
 	}
 
 	fmt.Println(pf.Filename)
@@ -29,14 +30,12 @@ func main() {
 	a := usam.Address{Buffer: pf.Buffer, R: pf.Buffer.Dot}
 	a, err = usam.ResolveAddress(pf.Addresses[0], a, 0)
 	if err != nil {
-		fmt.Println(err)
-		os.Exit(1)
+		cliutil.Err(err)
 	}
 	pf.Buffer.Data = append(pf.Buffer.Data[:a.R.P1], pf.Buffer.Data[a.R.P2:]...)
 	err = pf.Buffer.Save(pf.Filename)
 	if err != nil {
-		fmt.Println(err)
-		os.Exit(1)
+		cliutil.Err(err)
 	}
 	fmt.Printf("#%d,#%d\n", a.R.P1, a.R.P1)
 }

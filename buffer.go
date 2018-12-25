@@ -50,3 +50,7 @@ func (b *Buffer) Save(fn string) error {
 	_, err = f.Write(b.Data)
 	return err
 }
+
+func (b *Buffer) NewAddress() Address {
+	return Address{Buffer: b, R: b.Dot}
+}

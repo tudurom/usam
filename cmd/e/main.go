@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+
+	"github.com/tudurom/usam/cliutil"
 )
 
 func usage() {
@@ -18,14 +20,12 @@ func main() {
 
 	_, err := os.Stat(os.Args[1])
 	if err != nil {
-		fmt.Println(err)
-		os.Exit(1)
+		cliutil.Err(err)
 	}
 
 	abs, err := filepath.Abs(os.Args[1])
 	if err != nil {
-		fmt.Println(err)
-		os.Exit(1)
+		cliutil.Err(err)
 	}
 
 	fmt.Println(abs)
