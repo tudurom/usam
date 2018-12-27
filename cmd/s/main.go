@@ -48,21 +48,29 @@ func main() {
 		cliutil.Err(err)
 	}
 
+	fmt.Println(pf.Filename)
 	tmpl := []byte(os.Args[2])
 	if n == -1 {
+		replacement := re.ReplaceAll(pf.Buffer.Data[a.R.P1:a.R.P2], tmpl)
 		pf.Buffer.Data = append(
 			pf.Buffer.Data[:a.R.P1],
 			append(
-				re.ReplaceAll(pf.Buffer.Data[a.R.P1:a.R.P2], tmpl),
+				replacement,
 				pf.Buffer.Data[a.R.P2:]...,
 			)...)
+		fmt.Printf("#%d,#%d\n", a.R.P1, a.R.P1+len(replacement))
 	} else {
-		index := re.FindAllSubmatchIndex(pf.Buffer.Data[a.R.P1:a.R.P2], n)[n-1]
+		submatches := re.FindAllSubmatchIndex(pf.Buffer.Data[a.R.P1:a.R.P2], n)
+		if len(submatches) < n {
+			cliutil.Err(usam.ErrNoMatch)
+		}
+		index := submatches[n-1]
 		var result []byte
 		result = re.Expand(result, tmpl, pf.Buffer.Data[a.R.P1:a.R.P2], index)
 		pf.Buffer.Data = append(
 			pf.Buffer.Data[:a.R.P1+index[0]],
 			append(result, pf.Buffer.Data[a.R.P1+index[1]:]...)...)
+		fmt.Printf("#%d,#%d\n", a.R.P1+index[0], a.R.P1+index[1])
 	}
 	if err = pf.Buffer.Save(pf.Filename); err != nil {
 		cliutil.Err(err)

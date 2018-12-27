@@ -6,6 +6,6 @@ import (
 )
 
 func Err(err error) {
-	fmt.Fprintln(os.Stderr, err)
+	fmt.Fprintln(os.Stderr, os.Args[0]+":", err)
 	os.Exit(1)
 }

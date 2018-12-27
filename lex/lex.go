@@ -4,7 +4,6 @@ package lex
 import (
 	"bufio"
 	"bytes"
-	"fmt"
 	"io"
 	"strings"
 	"unicode"
@@ -115,7 +114,6 @@ func (s *Scanner) scanRegexp(reverse bool) (tok Token, value string) {
 	buf.WriteRune(s.read())
 	for {
 		ch := s.read()
-		fmt.Println("Scanning", ch)
 		if ch == eof {
 			break
 		} else if ch == char {
