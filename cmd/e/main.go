@@ -13,6 +13,7 @@ func usage() {
 }
 
 func main() {
+	cliutil.Name = "e"
 	if len(os.Args) != 2 {
 		usage()
 		os.Exit(1)

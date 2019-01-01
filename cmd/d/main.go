@@ -15,6 +15,7 @@ func usage() {
 }
 
 func main() {
+	cliutil.Name = "d"
 	if len(os.Args) != 1 {
 		usage()
 		os.Exit(1)
@@ -27,8 +28,7 @@ func main() {
 
 	fmt.Println(pf.Filename)
 
-	a := usam.Address{Buffer: pf.Buffer, R: pf.Buffer.Dot}
-	a, err = usam.ResolveAddress(pf.Addresses[0], a, 0)
+	a, err := usam.ResolveAddress(pf.Buffer.NewAddress(), pf.Addresses[0])
 	if err != nil {
 		cliutil.Err(err)
 	}

@@ -17,6 +17,7 @@ func usage() {
 }
 
 func main() {
+	cliutil.Name = "ca"
 	if len(os.Args) != 2 {
 		usage()
 		os.Exit(1)
@@ -27,19 +28,18 @@ func main() {
 		cliutil.Err(err)
 	}
 
-	a1 := pf.Addresses[0]
+	a1 := pf.Addresses[len(pf.Addresses)-1]
 	a2, err := parser.ParseString(os.Args[1])
 	if err != nil {
 		cliutil.Err(err)
 	}
 
-	a := usam.Address{Buffer: pf.Buffer, R: pf.Buffer.Dot}
-	a, err = usam.ResolveAddress(a1, a, 0)
+	a, err := usam.ResolveAddress(pf.Buffer.NewAddress(), a1)
 	if err != nil {
 		cliutil.Err(err)
 	}
 	a.Buffer.Dot = a.R
-	a, err = usam.ResolveAddress(a2, a, 0)
+	a, err = usam.ResolveAddress(a, a2)
 	if err != nil {
 		cliutil.Err(err)
 	}

@@ -3,6 +3,9 @@ package main
 import (
 	"fmt"
 	"os"
+	"sort"
+
+	"github.com/tudurom/usam/parser"
 
 	"github.com/tudurom/usam"
 	"github.com/tudurom/usam/cliutil"
@@ -10,11 +13,12 @@ import (
 )
 
 func usage() {
-	fmt.Println("Usage: c <text>")
+	fmt.Println("Usage: c <dot> <text>")
 }
 
 func main() {
-	if len(os.Args) != 2 {
+	cliutil.Name = "c"
+	if len(os.Args) != 3 {
 		usage()
 		os.Exit(1)
 	}
@@ -24,17 +28,31 @@ func main() {
 		cliutil.Err(err)
 	}
 
-	fmt.Println(pf.Filename)
-
-	a := usam.Address{Buffer: pf.Buffer, R: pf.Buffer.Dot}
-	a, err = usam.ResolveAddress(pf.Addresses[0], a, 0)
+	text := []byte(os.Args[2])
+	aarg, err := parser.ParseString(os.Args[1])
 	if err != nil {
 		cliutil.Err(err)
 	}
-	pf.Buffer.Data = append(pf.Buffer.Data[:a.R.P1], append([]byte(os.Args[1]), pf.Buffer.Data[a.R.P2:]...)...)
+
+	var as []usam.Address
+	for _, ap := range pf.Addresses {
+		a, err := usam.ResolveAddress(pf.Buffer.NewAddress(), ap, aarg)
+		if err != nil {
+			cliutil.Err(err)
+		}
+		as = append(as, a)
+	}
+	sort.Sort(cliutil.ByP1(as))
+
+	fmt.Println(pf.Filename)
+	i := 0
+	for _, a := range as {
+		pf.Buffer.Data = append(pf.Buffer.Data[:a.R.P1+i], append(text, pf.Buffer.Data[i+a.R.P2:]...)...)
+		fmt.Printf("#%d,#%d\n", a.R.P1, a.R.P1+len(text))
+		i += len(text) - (a.R.P2 - a.R.P1)
+	}
 	err = pf.Buffer.Save(pf.Filename)
 	if err != nil {
 		cliutil.Err(err)
 	}
-	fmt.Printf("#%d,#%d\n", a.R.P1, a.R.P1+len(os.Args[1]))
 }

@@ -16,6 +16,7 @@ func usage() {
 }
 
 func main() {
+	cliutil.Name = "s"
 	if len(os.Args) < 3 || len(os.Args) > 4 {
 		usage()
 		os.Exit(1)
@@ -43,7 +44,7 @@ func main() {
 		cliutil.Err(err)
 	}
 
-	a, err := usam.ResolveAddress(pf.Addresses[0], pf.Buffer.NewAddress(), 0)
+	a, err := usam.ResolveAddress(pf.Buffer.NewAddress(), pf.Addresses[0])
 	if err != nil {
 		cliutil.Err(err)
 	}

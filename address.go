@@ -189,8 +189,19 @@ func charAddress(ca *parser.CharAddress, addr Address, sign int) (Address, error
 	return addr, nil
 }
 
-// ResolveAddress computes the address from its sam form
-func ResolveAddress(ap *parser.Address, a Address, sign int) (Address, error) {
+func ResolveAddress(base Address, aps ...*parser.Address) (Address, error) {
+	var err error
+	for _, ap := range aps {
+		base, err = resolveAddress(ap, base, 0)
+		if err != nil {
+			return Address{}, err
+		}
+		base.Buffer.Dot = base.R
+	}
+	return base, nil
+}
+
+func resolveAddress(ap *parser.Address, a Address, sign int) (Address, error) {
 	for ap != nil {
 		var err error
 		switch ap.Simple.SimpleAddress() {
@@ -216,7 +227,7 @@ func ResolveAddress(ap *parser.Address, a Address, sign int) (Address, error) {
 		case ";":
 			var a1, a2 Address
 			if ap.Left != nil {
-				a1, err = ResolveAddress(ap.Left, a, sign)
+				a1, err = resolveAddress(ap.Left, a, sign)
 				if err != nil {
 					return Address{}, err
 				}
@@ -226,7 +237,7 @@ func ResolveAddress(ap *parser.Address, a Address, sign int) (Address, error) {
 				a1.R.P2 = 0
 			}
 			if ap.Next != nil {
-				a2, err = ResolveAddress(ap.Next, a, sign)
+				a2, err = resolveAddress(ap.Next, a, sign)
 				if err != nil {
 					return Address{}, err
 				}
