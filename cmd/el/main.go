@@ -13,11 +13,11 @@ import (
 )
 
 func usage() {
-	fmt.Println("Usage: ca <address>")
+	fmt.Println("Usage: el <address>")
 }
 
 func main() {
-	cliutil.Name = "ca"
+	cliutil.Name = "el"
 	if len(os.Args) != 2 {
 		usage()
 		os.Exit(1)

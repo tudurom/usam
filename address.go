@@ -26,8 +26,9 @@ func regexAddress(pattern string, addr Address, sign int) (Address, error) {
 	}
 	if sign >= 0 {
 		l = addr.R.P2
+		// at first, if there is no match, we try looping over
 		if loc = re.FindIndex(addr.Buffer.Data[l:]); loc == nil {
-			return Address{}, ErrNoMatch
+			loc = []int{0, 0}
 		}
 		loc[0] += l
 		loc[1] += l
@@ -38,7 +39,7 @@ func regexAddress(pattern string, addr Address, sign int) (Address, error) {
 				l = 0
 			}
 			if loc = re.FindIndex(addr.Buffer.Data[l:]); loc == nil {
-				panic("address")
+				return Address{}, ErrNoMatch
 			}
 			loc[0] += l
 			loc[1] += l
@@ -46,8 +47,10 @@ func regexAddress(pattern string, addr Address, sign int) (Address, error) {
 	} else {
 		l = addr.R.P1
 		locs := re.FindAllIndex(addr.Buffer.Data[:l], -1)
+		// same as before, if there is no match then we loop over
+		// this time it's backwards
 		if locs == nil {
-			return Address{}, ErrNoMatch
+			locs = [][]int{{l, l}}
 		}
 		loc = locs[len(locs)-1]
 		if loc[0] == loc[1] && loc[0] == l {
@@ -57,7 +60,7 @@ func regexAddress(pattern string, addr Address, sign int) (Address, error) {
 			}
 			locs := re.FindAllIndex(addr.Buffer.Data[:l], -1)
 			if locs == nil {
-				panic("address")
+				return Address{}, ErrNoMatch
 			}
 			loc = locs[len(locs)-1]
 		}
