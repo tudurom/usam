@@ -39,14 +39,16 @@ func main() {
 		cliutil.Err(err)
 	}
 
-	a, err := usam.ResolveAddress(pf.Buffer.NewAddress(), pf.Addresses[0])
-	if err != nil {
-		cliutil.Err(err)
-	}
-
-	matches := re.FindAllIndex(pf.Buffer.Data[a.R.P1:a.R.P2], -1)
 	fmt.Println(pf.Filename)
-	for _, match := range matches {
-		fmt.Printf("#%d,#%d\n", a.R.P1+match[0], a.R.P1+match[1])
+	for _, ap := range pf.Addresses {
+		a, err := usam.ResolveAddress(pf.Buffer.NewAddress(), ap)
+		if err != nil {
+			cliutil.Err(err)
+		}
+
+		matches := re.FindAllIndex(pf.Buffer.Data[a.R.P1:a.R.P2], -1)
+		for _, match := range matches {
+			fmt.Printf("#%d,#%d\n", a.R.P1+match[0], a.R.P1+match[1])
+		}
 	}
 }

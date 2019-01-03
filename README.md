@@ -110,7 +110,7 @@ For each `regexp` match in the dot, sets dot to that and execute the next comman
 
 Because `x` doesn't accept a dot argument, you must use `el` first. Ironically, `el` comes from "end loop".
 
-You can't nest `x` commands yet.
+You can also compose `x` commands.
 
 Example:
 
