@@ -25,6 +25,21 @@ Example:
 e file.txt | further editing
 ```
 
+### `po` and `pc`
+
+If you want to manipulate text from a pipe,
+you can use `po` (pipe open) and `pc` (pipe close).
+
+`pc` writes the resulting text to stdout.
+
+`po` reads all the pipe's content before continuing the command chain.
+
+Example:
+
+```bash
+dmesg | po | further editing | pc > new_dmesg.txt
+```
+
 ### `el <new_dot>`
 
 Sets the dot to a new address. When used in a loop, it ends the loop and sets the dot relative to the last dot of the loop.
