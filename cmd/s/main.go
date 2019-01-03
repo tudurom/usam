@@ -4,7 +4,10 @@ import (
 	"fmt"
 	"os"
 	"regexp"
+	"sort"
 	"strconv"
+
+	"github.com/tudurom/usam/parser"
 
 	"github.com/tudurom/usam"
 	"github.com/tudurom/usam/cliutil"
@@ -12,7 +15,7 @@ import (
 )
 
 func usage() {
-	fmt.Println("Usage: s <regexp> <text> [n|g]")
+	fmt.Println("Usage: s <regexp> <text> [n|g] [dot]")
 }
 
 func main() {
@@ -23,8 +26,10 @@ func main() {
 	}
 
 	n := 1
+	all := false
 	if len(os.Args) == 4 {
 		if os.Args[3] == "g" {
+			all = true
 			n = -1
 		} else {
 			var err error
@@ -34,7 +39,7 @@ func main() {
 			}
 		}
 	}
-	re, err := regexp.Compile(os.Args[1])
+	re, err := regexp.Compile("(?m)" + os.Args[1])
 	if err != nil {
 		cliutil.Err(err)
 	}
@@ -44,34 +49,57 @@ func main() {
 		cliutil.Err(err)
 	}
 
-	a, err := usam.ResolveAddress(pf.Buffer.NewAddress(), pf.Addresses[0])
+	rarg := "."
+	if len(os.Args) == 5 {
+		rarg = os.Args[4]
+	}
+	aarg, err := parser.ParseString(rarg)
 	if err != nil {
 		cliutil.Err(err)
 	}
 
+	var as []usam.Address
+	for _, ap := range pf.Addresses {
+		a, err := usam.ResolveAddress(pf.Buffer.NewAddress(), ap, aarg)
+		if err != nil {
+			cliutil.Err(err)
+		}
+		as = append(as, a)
+	}
+	sort.Sort(cliutil.ByP1(as))
+
+	// XXX: it's ugly
 	fmt.Println(pf.Filename)
 	tmpl := []byte(os.Args[2])
-	if n == -1 {
-		replacement := re.ReplaceAll(pf.Buffer.Data[a.R.P1:a.R.P2], tmpl)
-		pf.Buffer.Data = append(
-			pf.Buffer.Data[:a.R.P1],
-			append(
-				replacement,
-				pf.Buffer.Data[a.R.P2:]...,
-			)...)
-		fmt.Printf("#%d,#%d\n", a.R.P1, a.R.P1+len(replacement))
-	} else {
-		submatches := re.FindAllSubmatchIndex(pf.Buffer.Data[a.R.P1:a.R.P2], n)
+	i := 0
+	delta := 0
+	for _, a := range as {
+		submatches := re.FindAllSubmatchIndex(pf.Buffer.Data[i+a.R.P1:a.R.P2+i], n)
 		if len(submatches) < n {
 			cliutil.Err(usam.ErrNoMatch)
 		}
-		index := submatches[n-1]
-		var result []byte
-		result = re.Expand(result, tmpl, pf.Buffer.Data[a.R.P1:a.R.P2], index)
-		pf.Buffer.Data = append(
-			pf.Buffer.Data[:a.R.P1+index[0]],
-			append(result, pf.Buffer.Data[a.R.P1+index[1]:]...)...)
-		fmt.Printf("#%d,#%d\n", a.R.P1+index[0], a.R.P1+index[1])
+		iterations := n
+		if all {
+			iterations = len(submatches)
+		}
+		for k := 0; k < iterations; k++ {
+			if !all && k < iterations-1 {
+				continue
+			}
+
+			index := submatches[k]
+			var result []byte
+			result = re.Expand(result, tmpl, pf.Buffer.Data[i+a.R.P1:a.R.P2+i+delta], index)
+			for it := range index {
+				index[it] += delta
+			}
+			pf.Buffer.Data = append(
+				pf.Buffer.Data[:a.R.P1+i+index[0]],
+				append(result, pf.Buffer.Data[a.R.P1+i+index[1]:]...)...)
+			fmt.Printf("#%d,#%d\n", a.R.P1+i+index[0], a.R.P1+i+index[1])
+			delta = len(result) - (index[1] - index[0])
+			i += delta
+		}
 	}
 	if err = pf.Buffer.Save(pf.Filename); err != nil {
 		cliutil.Err(err)
