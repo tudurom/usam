@@ -132,5 +132,5 @@ Example:
 ```bash
 e vim.1 | el , | x 'vim' | p +-
 # Prints all lines that contain the word 'vim'.
-# If a line has 'vim' in it more than ones, the line will pe printed each time.
+# If a line has 'vim' in it more than once, the line will pe printed each time.
 ```
