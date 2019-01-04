@@ -4,6 +4,9 @@
 
 An experiment in blending sam with the shell.
 
+After the experiment is done, the plan is to build a shell around structural
+regular expressions.
+
 ## Mode of operation
 
 Each sam command is implemented as a stand-alone command line tool.
@@ -100,7 +103,7 @@ e file.txt | d '/ different/' | p ,
 
 ### `s <regexp> <text> [n|g] [dot]`
 
-Substitute `text` for the first match to the `regexp` in the dot. Set dot to the modified range. 
+Substitute `text` for the first match to the `regexp` in the dot. Set dot to the modified range.
 In `text`, `$` signs are interpreted as in Go's [`Expand`](https://golang.org/pkg/regexp/#Regexp.Expand).
 If you want to change dot and substitute the first match, you must call it like so:
 

@@ -1,8 +1,9 @@
 package main
 
 import (
-	"github.com/tudurom/usam/cliutil"
 	"os"
+
+	"github.com/tudurom/usam/cliutil"
 )
 
 func main() {
