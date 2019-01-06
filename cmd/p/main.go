@@ -18,7 +18,7 @@ func usage() {
 
 func main() {
 	cliutil.Name = "p"
-	if len(os.Args) != 2 {
+	if len(os.Args) > 2 {
 		usage()
 		os.Exit(1)
 	}

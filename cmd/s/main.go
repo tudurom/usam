@@ -20,7 +20,7 @@ func usage() {
 
 func main() {
 	cliutil.Name = "s"
-	if len(os.Args) < 3 || len(os.Args) > 4 {
+	if len(os.Args) < 3 || len(os.Args) > 5 {
 		usage()
 		os.Exit(1)
 	}
