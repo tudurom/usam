@@ -69,7 +69,6 @@ func main() {
 	sort.Sort(cliutil.ByP1(as))
 
 	// XXX: it's ugly
-	fmt.Println(pf.Filename)
 	tmpl := []byte(os.Args[2])
 	i := 0
 	delta := 0

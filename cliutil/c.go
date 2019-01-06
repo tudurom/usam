@@ -58,12 +58,11 @@ func C(name string, cf ChangeFunc, args []string) {
 	}
 	sort.Sort(ByP1(as))
 
-	fmt.Println(pf.Filename)
 	i := 0
 	for _, a := range as {
 		text := cf(argtext, pf.Buffer.Data[a.R.P1+i:a.R.P2+i])
 		pf.Buffer.Data = append(pf.Buffer.Data[:a.R.P1+i], append(text, pf.Buffer.Data[i+a.R.P2:]...)...)
-		pf.NewOutput(usam.Range{a.R.P1 + i, a.R.P1 + i + len(text)})
+		pf.NewOutput(usam.Range{P1: a.R.P1 + i, P2: a.R.P1 + i + len(text)})
 		i += len(text) - (a.R.P2 - a.R.P1)
 	}
 	err = pf.Buffer.Save(pf.Filename)

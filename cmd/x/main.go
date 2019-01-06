@@ -39,7 +39,6 @@ func main() {
 		cliutil.Err(err)
 	}
 
-	fmt.Println(pf.Filename)
 	for _, ap := range pf.Addresses {
 		a, err := usam.ResolveAddress(pf.Buffer.NewAddress(), ap)
 		if err != nil {
@@ -48,7 +47,9 @@ func main() {
 
 		matches := re.FindAllIndex(pf.Buffer.Data[a.R.P1:a.R.P2], -1)
 		for _, match := range matches {
+			pf.NewOutput(usam.Range{P1: a.R.P1 + match[0], P2: a.R.P1 + match[1]})
 			fmt.Printf("#%d,#%d\n", a.R.P1+match[0], a.R.P1+match[1])
 		}
 	}
+	pf.Print()
 }
