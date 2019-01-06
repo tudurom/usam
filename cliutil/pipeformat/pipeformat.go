@@ -2,6 +2,7 @@ package pipeformat
 
 import (
 	"bufio"
+	"fmt"
 	"io"
 	"os"
 
@@ -13,6 +14,8 @@ type PipeFormat struct {
 	Filename  string
 	Buffer    *usam.Buffer
 	Addresses []*parser.Address
+
+	output []usam.Range
 }
 
 func process(r io.Reader) (PipeFormat, error) {
@@ -22,12 +25,6 @@ func process(r io.Reader) (PipeFormat, error) {
 		pf.Filename = s.Text()
 	}
 	if err := s.Err(); err != nil {
-		return PipeFormat{}, err
-	}
-
-	var err error
-	pf.Buffer, err = usam.NewBufferFromFile(pf.Filename)
-	if err != nil {
 		return PipeFormat{}, err
 	}
 
@@ -44,9 +41,26 @@ func process(r io.Reader) (PipeFormat, error) {
 		return PipeFormat{}, err
 	}
 
+	var err error
+	pf.Buffer, err = usam.NewBufferFromFile(pf.Filename)
+	if err != nil {
+		return PipeFormat{}, err
+	}
+
 	return pf, nil
 }
 
 func Process() (PipeFormat, error) {
 	return process(os.Stdin)
+}
+
+func (pf *PipeFormat) NewOutput(r usam.Range) {
+	pf.output = append(pf.output, r)
+}
+
+func (pf *PipeFormat) Print() {
+	fmt.Println(pf.Filename)
+	for _, o := range pf.output {
+		fmt.Printf("#%d,#%d\n", o.P1, o.P2)
+	}
 }

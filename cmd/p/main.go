@@ -37,6 +37,7 @@ func main() {
 		cliutil.Err(err)
 	}
 
+	fmt.Println("xd", pf.Buffer.Data)
 	for _, ap := range pf.Addresses {
 		a, err := usam.ResolveAddress(pf.Buffer.NewAddress(), ap, aarg)
 		if err != nil {

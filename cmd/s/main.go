@@ -96,7 +96,7 @@ func main() {
 			pf.Buffer.Data = append(
 				pf.Buffer.Data[:a.R.P1+i+index[0]],
 				append(result, pf.Buffer.Data[a.R.P1+i+index[1]:]...)...)
-			fmt.Printf("#%d,#%d\n", a.R.P1+i+index[0], a.R.P1+i+index[1])
+			pf.NewOutput(usam.Range{P1: a.R.P1 + i + index[0], P2: a.R.P1 + i + index[1]})
 			delta = len(result) - (index[1] - index[0])
 			i += delta
 		}
@@ -104,4 +104,5 @@ func main() {
 	if err = pf.Buffer.Save(pf.Filename); err != nil {
 		cliutil.Err(err)
 	}
+	pf.Print()
 }
