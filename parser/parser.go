@@ -250,8 +250,10 @@ func (p *Parser) Parse() (*Address, error) {
 		addr.Simple = &sa
 	} else if tok == lex.Illegal {
 		return nil, errors.New("Illegal token '" + val + "'")
+	} else {
+		// golint will say to drop the else, don't do it
+		return FillDefaults(addr.Left), nil
 	}
-	return FillDefaults(addr.Left), nil
 
 	next, err := p.Parse()
 	if err != nil {
