@@ -2,10 +2,13 @@
 
 ## micro-sam
 
-An experiment in blending sam with the shell.
+An experiment in blending [sam][sam] with the shell.
 
-After the experiment is done, the plan is to build a shell around structural
-regular expressions.
+After the experiment is done, the plan is to build a [shell around structural
+regular expressions][rwsh].
+
+[sam]: http://sam.cat-v.org/
+[rwsh]: https://github.com/tudurom/rwsh
 
 ## Mode of operation
 
